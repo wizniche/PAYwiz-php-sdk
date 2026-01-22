@@ -36,8 +36,8 @@ class ArasClient
             $this->baseUrl = rtrim($baseUrl, '/');
         } else {
             $this->baseUrl = $environment === 'production'
-                ? 'https://api.araspayments.com'
-                : 'https://sandbox.araspayments.com';
+                ? 'https://api-pay.araspayment.com'
+                : 'https://api-develop.araspayment.com';
         }
 
         $this->httpClient = new Client([
@@ -173,18 +173,6 @@ class ArasClient
     }
 
     /**
-     * Get declined/refused transactions
-     *
-     * @param array $filters Optional filters
-     * @return array List of declined transactions
-     * @throws ApiException
-     */
-    public function getDeclinedTransactions(array $filters = []): array
-    {
-        return $this->get('/api/v1/transactions/declined', $filters);
-    }
-
-    /**
      * Get transaction by PSP reference
      *
      * @param string $pspReference The Adyen PSP reference
@@ -195,30 +183,6 @@ class ArasClient
     {
         $transactions = $this->getTransactions(['pspReference' => $pspReference]);
         return $transactions['data'][0] ?? null;
-    }
-
-    /**
-     * Get dashboard metrics
-     *
-     * @param array $filters Optional filters (startDate, endDate)
-     * @return array Dashboard metrics
-     * @throws ApiException
-     */
-    public function getDashboardMetrics(array $filters = []): array
-    {
-        return $this->get('/api/v1/transactions/dashboard/metrics', $filters);
-    }
-
-    /**
-     * Get transaction volume data
-     *
-     * @param array $filters Optional filters
-     * @return array Volume data for charts
-     * @throws ApiException
-     */
-    public function getTransactionVolume(array $filters = []): array
-    {
-        return $this->get('/api/v1/transactions/dashboard/volume', $filters);
     }
 
     // =========================================================================
