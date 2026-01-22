@@ -39,6 +39,8 @@ try {
         'taxId' => '12-3456789',
         'referenceId' => 'MY_INTERNAL_ID_123',
         'settlementDelayDays' => 1,
+        'themeId' => 'YOUR_THEME_ID',
+        'redirectUrl' => 'https://yoursite.com/complete',
         'address' => [
             'street' => '123 Main St',
             'city' => 'San Francisco',
@@ -83,8 +85,16 @@ if ($client->isMerchantApproved($accountId)) {
 URLs expire after 1 hour. Regenerate if needed:
 
 ```php
-$result = $client->regenerateOnboardingUrl($accountId);
+// Basic usage
+$result = $client->regenerateOnboardingUrl('AH00000000000000000000001');
 $newUrl = $result['data']['onboardingUrl'];
+
+// With redirect URL and theme
+$result = $client->regenerateOnboardingUrl(
+    'AH00000000000000000000001',
+    'https://yoursite.com/complete',
+    'YOUR_THEME_ID'
+);
 ```
 
 ## Transactions

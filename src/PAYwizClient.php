@@ -82,6 +82,8 @@ class PAYwizClient
      *     'organizationType' => 'privateCompany',
      *     'taxId' => '12-3456789',
      *     'referenceId' => 'YOUR_INTERNAL_ID',
+     *     'themeId' => 'YOUR_THEME_ID',
+     *     'redirectUrl' => 'https://yoursite.com/complete',
      *     'address' => [
      *         'street' => '123 Main St',
      *         'city' => 'San Francisco',
@@ -119,13 +121,35 @@ class PAYwizClient
      *
      * Use this when the original onboarding URL has expired (URLs are valid for 1 hour).
      *
-     * @param int $accountId The merchant's account ID
+     * @param string $accountHolderId The merchant's account holder ID (e.g., AH00000000000000000000001)
+     * @param string|null $redirectUrl URL to redirect after onboarding completion
+     * @param string|null $themeId Custom theme ID for the onboarding page
      * @return array Contains new onboardingUrl
      * @throws ApiException
+     * 
+     * @example
+     * $result = $client->regenerateOnboardingUrl(
+     *     'AH00000000000000000000001',
+     *     'https://yoursite.com/complete',
+     *     'YOUR_THEME_ID'
+     * );
      */
-    public function regenerateOnboardingUrl(int $accountId): array
-    {
-        return $this->post("/api/v1/onboarding/accounts/{$accountId}/onboarding-url");
+    public function regenerateOnboardingUrl(
+        string $accountHolderId,
+        ?string $redirectUrl = null,
+        ?string $themeId = null
+    ): array {
+        $data = [];
+        
+        if ($redirectUrl !== null) {
+            $data['redirectUrl'] = $redirectUrl;
+        }
+        
+        if ($themeId !== null) {
+            $data['themeId'] = $themeId;
+        }
+        
+        return $this->post("/api/v1/onboarding/accounts/{$accountHolderId}/onboarding-url", $data);
     }
 
     /**
