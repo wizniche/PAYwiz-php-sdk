@@ -1,0 +1,39 @@
+{
+    "name": "aras/payments-sdk",
+    "description": "PHP SDK for Aras Payments Platform - Onboarding, Transactions & Refunds",
+    "type": "library",
+    "license": "MIT",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Aras Payments",
+            "email": "support@araspayments.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aras\\Payments\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Aras\\Payments\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "keywords": [
+        "payments",
+        "onboarding",
+        "merchant",
+        "adyen",
+        "payment-gateway"
+    ]
+}
