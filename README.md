@@ -239,20 +239,65 @@ $client->setTimeout(60); // 60 seconds
 
 ## Webhook Handling
 
-When merchants complete KYC, you'll receive webhooks. Set up an endpoint to handle them:
+Securely handle webhooks with signature verification:
 
 ```php
-// In your webhook controller
-$payload = json_decode(file_get_contents('php://input'), true);
+use PAYwiz\Payments\WebhookHandler;
+use PAYwiz\Payments\Exceptions\ApiException;
 
-if ($payload['event'] === 'account.approved') {
-    $accountId = $payload['data']['accountId'];
+// Quick method - handles everything
+try {
+    $event = WebhookHandler::handleRequest('your-webhook-secret');
     
-    // Update your database
-    // Notify your team
-    // Enable features for merchant
+    switch ($event['type']) {
+        case 'account.created':
+            $account = $event['data']['account'];
+            echo "New account: " . $account['companyName'];
+            break;
+            
+        case 'account.approved':
+            $account = $event['data']['account'];
+            // Enable features for merchant
+            break;
+            
+        case 'account.updated':
+            // Handle update
+            break;
+    }
+    
+    http_response_code(200);
+    echo 'OK';
+    
+} catch (ApiException $e) {
+    http_response_code(401);
+    echo 'Invalid signature';
 }
 ```
+
+### Manual Verification
+
+```php
+$handler = new WebhookHandler('your-webhook-secret');
+
+$payload = file_get_contents('php://input');
+$signature = $_SERVER['HTTP_X_WEBHOOK_SIGNATURE'] ?? '';
+$timestamp = (int) ($_SERVER['HTTP_X_WEBHOOK_TIMESTAMP'] ?? 0);
+
+try {
+    $event = $handler->verifyAndParse($payload, $signature, $timestamp);
+    // Process event...
+} catch (ApiException $e) {
+    // Invalid signature or expired timestamp
+}
+```
+
+### Webhook Events
+
+| Event | Description |
+|-------|-------------|
+| `account.created` | New merchant account created |
+| `account.updated` | Merchant account information updated |
+| `account.approved` | Merchant account approved and active |
 
 ## Industries
 
