@@ -217,29 +217,42 @@ class PAYwizClient
      * Process a refund
      *
      * @param string $pspReference The original transaction PSP reference
-     * @param float $amount Amount to refund (in dollars, e.g., 10.50)
+     * @param int|null $amount Amount to refund in cents (e.g., 1500 = $15.00). Omit for full refund.
+     * @param string|null $reason Optional reason for the refund
      * @return array Refund result
      * @throws ApiException
      * 
      * @example
      * // Full refund
-     * $result = $client->processRefund('XYZABC123456', 100.00);
+     * $result = $client->processRefund('MXNS422RC226C665');
      * 
-     * // Partial refund
-     * $result = $client->processRefund('XYZABC123456', 25.50);
+     * // Partial refund ($15.00)
+     * $result = $client->processRefund('MXNS422RC226C665', 1500);
+     * 
+     * // With reason
+     * $result = $client->processRefund('MXNS422RC226C665', 1500, 'Customer request');
      */
-    public function processRefund(string $pspReference, float $amount): array
-    {
-        if ($amount <= 0) {
-            throw new ApiException('Refund amount must be greater than 0', 400, [
-                'amount' => 'Amount must be a positive number'
-            ]);
+    public function processRefund(
+        string $pspReference,
+        ?int $amount = null,
+        ?string $reason = null
+    ): array {
+        $data = [];
+        
+        if ($amount !== null) {
+            if ($amount <= 0) {
+                throw new ApiException('Refund amount must be greater than 0', 400, [
+                    'amount' => 'Amount must be a positive number'
+                ]);
+            }
+            $data['amount'] = $amount;
+        }
+        
+        if ($reason !== null) {
+            $data['reason'] = $reason;
         }
 
-        return $this->post('/api/v1/refunds/process', [
-            'pspReference' => $pspReference,
-            'amount' => round($amount, 2),
-        ]);
+        return $this->post("/api/v1/transactions/{$pspReference}/refund", $data);
     }
 
     // =========================================================================

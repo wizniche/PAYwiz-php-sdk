@@ -125,10 +125,13 @@ $transaction = $client->getTransactionByPspReference('XYZABC123456');
 ```php
 try {
     // Full refund
-    $result = $client->processRefund('XYZABC123456', 100.00);
+    $result = $client->processRefund('MXNS422RC226C665');
     
-    // Partial refund
-    $result = $client->processRefund('XYZABC123456', 25.50);
+    // Partial refund ($15.00 = 1500 cents)
+    $result = $client->processRefund('MXNS422RC226C665', 1500);
+    
+    // With reason
+    $result = $client->processRefund('MXNS422RC226C665', 1500, 'Customer request');
     
     echo "Refund status: " . $result['data']['status'] . "\n";
 
